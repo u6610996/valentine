@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Valentine Date</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffb6c1, #ff69b4, #ffb6c1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: floatHeart linear infinite;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .title-text {
+            color: #fff;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .question-text {
+            color: #fff;
+            font-size: clamp(1rem, 3.5vw, 1.4rem);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .cat-image {
+            width: clamp(180px, 50vw, 300px);
+            height: auto;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 4px 15px rgba(0,0,0,0.2));
+            transition: transform 0.3s ease;
+        }
+
+        .cat-image:hover {
+            transform: scale(1.02);
+        }
+
+        .buttons-wrapper {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-yes:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-yes:active {
+            transform: translateY(0);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-no:hover {
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.6);
+        }
+
+        .btn-no.runaway {
+            position: fixed;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Fireworks */
+        .fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .firework-particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: explode 1.5s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 55;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Stats Panel */
+        .stats-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stats-overlay.show {
+            display: flex;
+        }
+
+        .stats-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .stats-panel h2 {
+            color: #e91e63;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .stats-panel .stat-item {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .stats-panel .stat-item strong {
+            color: #333;
+        }
+
+        .stats-panel .log-entry {
+            font-size: 0.8rem;
+            color: #666;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-close {
+            background: #e91e63;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .success-text {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            .buttons-wrapper {
+                gap: 15px;
+            }
+            .btn-yes, .btn-no {
+                padding: 12px 30px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .cat-image {
+                width: clamp(120px, 30vw, 200px);
+                margin-bottom: 15px;
+            }
+            .title-text {
+                margin-bottom: 5px;
+            }
+            .question-text {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Hearts Background -->
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <!-- Fireworks Container -->
+    <div class="fireworks-container" id="fireworks"></div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="title-text" id="titleText">Valentine's Day 💕</div>
+        <div class="question-text" id="questionText">พร้อมน้องวิวอยากไปเที่ยวมั้ยครับ?</div>
+        <img src="cat1.gif" alt="Cute Cat" class="cat-image" id="catImage">
+        <div class="buttons-wrapper" id="buttonsWrapper">
+            <button class="btn-yes" id="btnYes" onclick="handleYes()">ตกลง 💚</button>
+            <button class="btn-no" id="btnNo" onclick="handleNo()">ไม่ 💔</button>
+        </div>
+    </div>
+
+    <!-- Stats Panel (Hidden) -->
+    <div class="stats-overlay" id="statsOverlay" onclick="closeStats(event)">
+        <div class="stats-panel" id="statsPanel">
+            <h2>📊 สถิติการกดปุ่ม</h2>
+            <div id="statsContent"></div>
+            <button class="stats-close" onclick="closeStats()">ปิด</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== TRACKING DATA =====
+        let clickLog = JSON.parse(localStorage.getItem('valentine_clicks') || '[]');
+        let noClickCount = parseInt(localStorage.getItem('valentine_no_count') || '0');
+        let accepted = localStorage.getItem('valentine_accepted') === 'true';
+        let yesBtnScale = parseFloat(localStorage.getItem('valentine_yes_scale') || '1');
+
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const catImage = document.getElementById('catImage');
+        const titleText = document.getElementById('titleText');
+        const questionText = document.getElementById('questionText');
+
+        // ===== RESTORE STATE IF ALREADY ACCEPTED =====
+        if (accepted) {
+            showAccepted();
+        } else {
+            btnYes.style.transform = `scale(${yesBtnScale})`;
+        }
+
+        // ===== FLOATING HEARTS =====
+        function createFloatingHearts() {
+            const heartsBg = document.getElementById('heartsBg');
+            const hearts = ['💕', '💖', '💗', '💘', '💝', '❤️', '🩷'];
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (8 + Math.random() * 12) + 's';
+                heart.style.animationDelay = (Math.random() * 10) + 's';
+                heart.style.fontSize = (15 + Math.random() * 20) + 'px';
+                heartsBg.appendChild(heart);
+            }
+        }
+        createFloatingHearts();
+
+        // ===== HANDLE "ไม่" BUTTON =====
+        function handleNo() {
+            noClickCount++;
+            localStorage.setItem('valentine_no_count', noClickCount);
+
+            // Log click
+            logClick('ไม่', noClickCount);
+
+            // Make button run away
+            btnNo.classList.add('runaway');
+
+            const maxX = window.innerWidth - btnNo.offsetWidth - 20;
+            const maxY = window.innerHeight - btnNo.offsetHeight - 20;
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+
+            btnNo.style.left = newX + 'px';
+            btnNo.style.top = newY + 'px';
+
+            // Grow yes button
+            yesBtnScale += 0.08;
+            localStorage.setItem('valentine_yes_scale', yesBtnScale);
+            btnYes.style.transform = `scale(${yesBtnScale})`;
+            btnYes.style.transition = 'transform 0.3s ease';
+
+            // Fun text changes
+            const noTexts = [
+                'พร้อมน้องวิวอยากไปเที่ยวมั้ยครับ?',
+                'แน่ใจเหรอครับ? 🥺',
+                'คิดดีๆ นะครับ... 💭',
+                'กดตกลงเถอะนะ~ 🙏',
+                'อย่าทำใจร้ายกับพี่สิ 😢',
+                'ลองกดตกลงดูสักครั้ง? 🌹',
+                'ปุ่มไม่มันหนีไปเรื่อยนะ 😏',
+                'น้องวิวใจดีที่สุดเลย กดตกลงนะ~ 💖',
+                'กดตกลงแล้วจะมีความสุขมากเลยครับ 🎉',
+                'ไม่ยอมแพ้! กดตกลงเถอะ~ 💪'
+            ];
+            const textIndex = Math.min(noClickCount, noTexts.length - 1);
+            questionText.textContent = noTexts[textIndex];
+
+            // Send data to webhook if configured
+            sendToWebhook('no_click', { count: noClickCount });
+        }
+
+        // ===== HANDLE "ตกลง" BUTTON =====
+        function handleYes() {
+            if (accepted) return;
+            accepted = true;
+            localStorage.setItem('valentine_accepted', 'true');
+
+            // Log click
+            logClick('ตกลง', noClickCount);
+
+            // Send data to webhook
+            sendToWebhook('accepted', {
+                noClickCount: noClickCount,
+                message: 'น้องวิวกดตกลงแล้ว!'
+            });
+
+            showAccepted();
+        }
+
+        function showAccepted() {
+            // Change image
+            catImage.src = 'cat2.gif';
+
+            // Change text
+            titleText.innerHTML = '🎉 YAY! 🎉';
+            titleText.classList.add('success-text');
+            questionText.textContent = 'น้องต้องเป็นคนแพลนนะครับ';
+            questionText.style.fontSize = 'clamp(1.2rem, 4vw, 1.8rem)';
+
+            // Hide no button
+            btnNo.style.display = 'none';
+
+            // Change yes button
+            btnYes.textContent = '💖 ตกลงแล้ว 💖';
+            btnYes.style.transform = 'scale(1)';
+            btnYes.onclick = null;
+            btnYes.style.cursor = 'default';
+            btnYes.style.background = 'linear-gradient(135deg, #e91e63, #c2185b)';
+
+            // Launch fireworks!
+            if (!document.hidden) {
+                launchFireworks();
+                launchConfetti();
+            }
+
+            // Change background
+            document.body.style.background = 'linear-gradient(135deg, #ffb6c1, #ff1493, #ff69b4)';
+        }
+
+        // ===== FIREWORKS =====
+        function launchFireworks() {
+            const container = document.getElementById('fireworks');
+            const colors = ['#ff1493', '#ff69b4', '#ffb6c1', '#ffd700', '#ff6347', '#00ff7f', '#ff4500', '#7b68ee'];
+
+            for (let burst = 0; burst < 8; burst++) {
+                setTimeout(() => {
+                    const centerX = Math.random() * window.innerWidth;
+                    const centerY = Math.random() * (window.innerHeight * 0.6);
+
+                    for (let i = 0; i < 30; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'firework-particle';
+                        const angle = (Math.PI * 2 * i) / 30;
+                        const distance = 80 + Math.random() * 120;
+                        const tx = Math.cos(angle) * distance;
+                        const ty = Math.sin(angle) * distance;
+
+                        particle.style.cssText = `
+                            left: ${centerX}px;
+                            top: ${centerY}px;
+                            width: ${4 + Math.random() * 6}px;
+                            height: ${4 + Math.random() * 6}px;
+                            background: ${colors[Math.floor(Math.random() * colors.length)]};
+                            --tx: ${tx}px;
+                            --ty: ${ty}px;
+                            animation-duration: ${1 + Math.random() * 0.8}s;
+                        `;
+                        container.appendChild(particle);
+
+                        setTimeout(() => particle.remove(), 2000);
+                    }
+                }, burst * 400);
+            }
+        }
+
+        function launchConfetti() {
+            const colors = ['#ff1493', '#ffd700', '#ff69b4', '#00ff7f', '#ff6347', '#7b68ee', '#ff4500', '#00bfff'];
+            const shapes = ['square', 'circle'];
+
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+                    confetti.style.cssText = `
+                        left: ${Math.random() * 100}%;
+                        top: -10px;
+                        width: ${6 + Math.random() * 8}px;
+                        height: ${6 + Math.random() * 8}px;
+                        background: ${color};
+                        border-radius: ${shape === 'circle' ? '50%' : '2px'};
+                        animation-duration: ${2 + Math.random() * 3}s;
+                        animation-delay: ${Math.random() * 0.5}s;
+                    `;
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 30);
+            }
+        }
+
+        // ===== CLICK LOGGING =====
+        function logClick(button, currentNoCount) {
+            const entry = {
+                button: button,
+                time: new Date().toLocaleString('th-TH', {
+                    timeZone: 'Asia/Bangkok',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }),
+                timestamp: Date.now(),
+                noCountAtTime: currentNoCount
+            };
+            clickLog.push(entry);
+            localStorage.setItem('valentine_clicks', JSON.stringify(clickLog));
+        }
+
+        // ===== WEBHOOK (Optional Remote Tracking) =====
+        // To enable: set your webhook URL below
+        // You can use services like:
+        // - Google Apps Script (free)
+        // - webhook.site (for testing)
+        // - n8n, Make.com, Zapier
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx_04ZyjewcDoTR2C6OmyaEpJ31Wp6hoRF9BKLRNbNYws3aE7VGP44uhLQvwRynh0-c/exec'; // ← ใส่ URL webhook ที่นี่
+
+        function sendToWebhook(event, data) {
+            if (!WEBHOOK_URL) return;
+            try {
+                fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        event: event,
+                        data: data,
+                        time: new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
+                        userAgent: navigator.userAgent
+                    }),
+                    mode: 'no-cors'
+                });
+            } catch (e) {
+                // Silent fail
+            }
+        }
+
+        // ===== STATS PANEL =====
+        // Secret: Triple tap title or press Ctrl+Shift+S
+        let titleTapCount = 0;
+        let titleTapTimer;
+
+        titleText.addEventListener('click', () => {
+            titleTapCount++;
+            clearTimeout(titleTapTimer);
+            titleTapTimer = setTimeout(() => { titleTapCount = 0; }, 500);
+            if (titleTapCount >= 3) {
+                showStats();
+                titleTapCount = 0;
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                showStats();
+            }
+        });
+
+        function showStats() {
+            const overlay = document.getElementById('statsOverlay');
+            const content = document.getElementById('statsContent');
+
+            const totalNo = clickLog.filter(c => c.button === 'ไม่').length;
+            const yesClick = clickLog.find(c => c.button === 'ตกลง');
+
+            let html = `
+                <div class="stat-item">
+                    <strong>🔴 กดปุ่ม "ไม่" ทั้งหมด:</strong> ${totalNo} ครั้ง
+                </div>
+                <div class="stat-item">
+                    <strong>🟢 กดปุ่ม "ตกลง":</strong> ${yesClick ? 'กดแล้ว ✅' : 'ยังไม่กด ❌'}
+                </div>
+            `;
+
+            if (yesClick) {
+                html += `
+                    <div class="stat-item">
+                        <strong>⏰ เวลาที่กดตกลง:</strong> ${yesClick.time}
+                    </div>
+                `;
+            }
+
+            if (clickLog.length > 0) {
+                html += `<h3 style="margin: 15px 0 8px; color: #333; font-size: 1rem;">📋 ประวัติการกดทั้งหมด</h3>`;
+                const recentLogs = clickLog.slice(-20).reverse();
+                recentLogs.forEach((log, i) => {
+                    const emoji = log.button === 'ตกลง' ? '🟢' : '🔴';
+                    html += `<div class="log-entry">${emoji} ${log.button} — ${log.time}</div>`;
+                });
+                if (clickLog.length > 20) {
+                    html += `<div class="log-entry" style="color: #999;">...แสดง 20 รายการล่าสุด จากทั้งหมด ${clickLog.length} รายการ</div>`;
+                }
+            }
+
+            // Export data button
+            html += `
+                <div style="margin-top: 15px;">
+                    <button onclick="exportData()" style="background: #2196F3; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-family: inherit; font-size: 0.85rem;">📤 Export ข้อมูล</button>
+                    <button onclick="resetData()" style="background: #f44336; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-family: inherit; font-size: 0.85rem; margin-left: 5px;">🗑️ Reset</button>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            overlay.classList.add('show');
+        }
+
+        function closeStats(event) {
+            if (event && event.target !== document.getElementById('statsOverlay')) return;
+            document.getElementById('statsOverlay').classList.remove('show');
+        }
+
+        function exportData() {
+            const data = {
+                totalNoClicks: clickLog.filter(c => c.button === 'ไม่').length,
+                accepted: accepted,
+                clickLog: clickLog
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'valentine_stats.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetData() {
+            if (confirm('ต้องการ Reset ข้อมูลทั้งหมดใช่มั้ย?')) {
+                localStorage.removeItem('valentine_clicks');
+                localStorage.removeItem('valentine_no_count');
+                localStorage.removeItem('valentine_accepted');
+                localStorage.removeItem('valentine_yes_scale');
+                location.reload();
+            }
+        }
+
+        // ===== PREVENT NO BUTTON GOING OFF SCREEN ON RESIZE =====
+        window.addEventListener('resize', () => {
+            if (btnNo.classList.contains('runaway')) {
+                const maxX = window.innerWidth - btnNo.offsetWidth - 20;
+                const maxY = window.innerHeight - btnNo.offsetHeight - 20;
+                let currentX = parseInt(btnNo.style.left) || 0;
+                let currentY = parseInt(btnNo.style.top) || 0;
+                btnNo.style.left = Math.min(currentX, maxX) + 'px';
+                btnNo.style.top = Math.min(currentY, maxY) + 'px';
+            }
+        });
+
+        // Mobile: also run away on touchstart for "ไม่" button
+        btnNo.addEventListener('touchstart', (e) => {
+            if (!accepted && btnNo.classList.contains('runaway')) {
+                e.preventDefault();
+                handleNo();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
